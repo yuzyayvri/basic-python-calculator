@@ -1,6 +1,6 @@
 # Basic-Python-Calculator
 
-## Version 0.3.0
+## Version 0.3.1
 My first project with Python. Originally made sometime in mid 2025, I picked this project back up in early 2026 because I wanted to continue learning Python.
 
 ## Current features
@@ -14,7 +14,7 @@ My first project with Python. Originally made sometime in mid 2025, I picked thi
 - Basic settings menu
 - Secret easter eggs..?? 👀
 
-## Changelog (v0.3.0)
+## Changelog (v0.3.1)
 - Theme toggle (only light and dark theme for now)
 - Backend UI changes
 - Bugfixes
