@@ -1,6 +1,6 @@
 # Basic-Python-Calculator
 
-## Version 0.3.1
+## Version 0.3.4
 My first project with Python. Originally made sometime in mid 2025, I picked this project back up in early 2026 because I wanted to continue learning Python.
 
 ## Current features
@@ -14,15 +14,19 @@ My first project with Python. Originally made sometime in mid 2025, I picked thi
 - Basic settings menu
 - Secret easter eggs..?? 👀
 
-## Changelog (v0.3.1)
-- Theme toggle (only light and dark theme for now)
-- Backend UI changes
-- Bugfixes
+## Changelog (v0.3.4)
+- Added theme toggle (light/dark) in settings menu
+- Fixed bug where error messages didn't autoclear after 5 seconds
+- Fixed bug where ERR:invopErr didn't show in the error log
+- Refactored error logging to be compatible across operating systems
 
 ## Future plans (so far)
 - More operations and inputs
 - Memory functions
 - More style and theming
+- Better and more efficient code
+
+# Documentation (wip)
 
 ## Error codes
 - ERR:invopErr
