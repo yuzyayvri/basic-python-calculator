@@ -173,7 +173,9 @@ class Calculator:
     def calculate(self):
         try:
             if self.operation not in self.functions:
-                self.result.config(text="You have no operation selected. ERR:invopErr", fg='red')
+                err_msg = "You have no operation selected. ERR:invopErr"
+                self.result.config(text=err_msg, fg='red')
+                self.log_error(err_msg)
                 self.result.after(5000, lambda: self.clear())
                 return  
             first_num = self.input1.get()
