@@ -174,7 +174,8 @@ class Calculator:
         try:
             if self.operation not in self.functions:
                 self.result.config(text="You have no operation selected. ERR:invopErr", fg='red')
-                return
+                self.result.after(5000, lambda: self.clear())
+                return  
             first_num = self.input1.get()
             second_num = self.input2.get()
             output = self.functions[self.operation](float(first_num), float(second_num))
@@ -186,14 +187,17 @@ class Calculator:
         except ZeroDivisionError:
             err_msg = "You cannot divide by zero. ERR:zerodivErr"
             self.result.config(text=err_msg, fg='red')
+            self.result.after(5000, lambda: self.clear())
             self.log_error(err_msg)
         except ValueError:
             err_msg = "Your input(s) is not a valid number. ERR:valErr"
             self.result.config(text=err_msg, fg='red')
+            self.result.after(5000, lambda: self.clear())
             self.log_error(err_msg)
         except FloatingPointError:
             err_msg = "A floating point error occurred. ERR:floatErr"
             self.result.config(text=err_msg, fg='red')
+            self.result.after(5000, lambda: self.clear())
             self.log_error(err_msg)
     
     def clear(self):
