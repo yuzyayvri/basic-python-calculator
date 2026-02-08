@@ -5,8 +5,10 @@ import os
 os.makedirs("logs", exist_ok=True)
 
 class Calculator:
+    
     def __init__(self, root):
         self.window = root
+        self.window.configure(bg='black')
         self.operation = None
         self.functions = {
             '+': lambda x, y: x + y,
@@ -16,11 +18,35 @@ class Calculator:
             '^': lambda x, y: x ** y
         }
         self.easter_eggs_enabled = True
+        self.dark_theme_enabled = True
         
         self.setup_ui()
+        self.apply_theme(dark=True)
+        
+    def apply_theme(self, dark=True):
+        if dark:
+            back = 'black'
+            fore = 'white'
+            entry_bg = 'black'
+        else:
+            back = 'white'
+            fore = 'black'
+            entry_bg = 'white'
+        
+        self.window.configure(bg=back)
+        
+        style = ttk.Style()
+        style.configure("TFrame", background=back)
+        self.frame.configure(style="TFrame")
+        style.configure("TEntry", fieldbackground=entry_bg, foreground=fore)
+        for widget in self.frame.winfo_children():
+            if isinstance(widget, (Label, Button, Checkbutton)):
+                widget.configure(bg=back, fg=fore)
+            elif isinstance(widget, Listbox):
+                widget.configure(bg=entry_bg, fg=fore)
     
     def setup_ui(self):
-        self.frame = ttk.Frame(self.window, padding=30, width=700, height=550)
+        self.frame = ttk.Frame(self.window, padding=30, width=700, height=550, style='TFrame')
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.grid_propagate(False)
         self.window.title('Basic Python Calculator')
@@ -35,10 +61,10 @@ class Calculator:
         text = Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'), fg='white')
         text.grid(row=0, column=2, columnspan=5, pady=20)
         
-        self.input1 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center')
+        self.input1 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center', style='TEntry')
         self.input1.grid(row=1, column=1, columnspan=3, padx=10, pady=15)
         
-        self.input2 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center')
+        self.input2 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center', style='TEntry')
         self.input2.grid(row=1, column=5, columnspan=3, padx=10, pady=15)
         
         self.addition = Button(self.frame, text='+', command=lambda: self.button_click_effect(self.addition, lambda: self.set_operation('+')), width=8, font=('Verdana', 12), padx=10, pady=5)
@@ -76,18 +102,49 @@ class Calculator:
         
         self.bind_keys()
         self.configure_styles()
+
+    def configure_styles(self):
+        style = ttk.Style()
+        style.configure('TEntry', font=('Verdana', 10), background = 'black', fieldbackground='white')
+        style.configure('TFrame', background = 'black', foreground = 'white')
+        style.theme_use('alt')
         
     def settings_handler(self):
         settings_window = Toplevel(self.window)
         settings_window.title("Settings")
         
         eggs_toggled = BooleanVar(value=self.easter_eggs_enabled)
+        dark_toggled = BooleanVar(value=self.dark_theme_enabled)
+        
+        def theme_settings():
+            if dark_toggled.get():
+                settings_window.configure(bg='black')
+                for widget in settings_window.winfo_children():
+                    if isinstance(widget, (Label, Button, Checkbutton)):
+                        widget.configure(bg='black', fg='white')
+            else:
+                settings_window.configure(bg='white')
+                for widget in settings_window.winfo_children():
+                    if isinstance(widget, (Label, Button, Checkbutton)):
+                        widget.configure(bg='white', fg='black')
+                        
+        theme_settings()
         
         def toggle_eggs():
             self.easter_eggs_enabled = eggs_toggled.get()
-            print(f"Easter Eggs Enabled: {self.easter_eggs_enabled}")
+        def dark_theme():
+            self.dark_theme_enabled = dark_toggled.get()
+            if not dark_toggled.get():
+                self.apply_theme(dark=False)
+                theme_settings()
+            else:
+                self.apply_theme(dark=True)
+                theme_settings()
+                    
+        dark_toggle = Checkbutton(settings_window, text=("Enable Dark Theme?"), variable=dark_toggled, command=dark_theme, font=('Verdana', 12), fg='white', bg='black', selectcolor='black')
+        dark_toggle.pack(padx=20, pady=10)
             
-        eggs_checkbox = Checkbutton(settings_window, text="Enable Easter Eggs", variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12))
+        eggs_checkbox = Checkbutton(settings_window, text=("Enable Easter Eggs?"), variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12), fg='white', bg='black', selectcolor='black')
         eggs_checkbox.pack(padx=20, pady=20)
         
     def log_error(self, err_msg):
@@ -142,9 +199,9 @@ class Calculator:
     def button_click_effect(self, btn, callback=None):
         original_bg = btn.cget('bg')
         btn.config(bg='lightgray')
+        self.window.after(100, lambda: btn.config(bg=original_bg))
         if callback:
             callback()
-        self.window.after(100, lambda: btn.config(bg=original_bg))
     
     def bind_keys(self):
         self.window.bind('<Return>', lambda _: self.button_click_effect(self.calc_button, self.calculate))
@@ -154,16 +211,11 @@ class Calculator:
         self.window.bind('*', lambda _: self.button_click_effect(self.multiplication, lambda: self.set_operation('*')))
         self.window.bind('/', lambda _: self.button_click_effect(self.division, lambda: self.set_operation('/')))
         self.window.bind('^', lambda _: self.button_click_effect(self.exponent, lambda: self.set_operation('^')))
-    
-    def configure_styles(self):
-        style = ttk.Style()
-        style.configure('TLabel', font=('Verdana', 10))
-        style.configure('TButton', font=('Verdana', 10))
-        style.configure('TEntry', font=('Verdana', 10))
-        style.configure('Bold.TLabel', font=('Verdana', 10, 'bold'))
+        
 
 if __name__ == '__main__':
     root = Tk()
     root.resizable(False, False)
+    root.configure(bg='black')
     app = Calculator(root)
     root.mainloop()
