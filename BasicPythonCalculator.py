@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+import datetime
+import os
+os.makedirs("logs", exist_ok=True)
 
 class Calculator:
     def __init__(self, root):
@@ -28,7 +31,7 @@ class Calculator:
         for i in range(6):
             self.frame.grid_rowconfigure(i, weight=1)
         
-        text = ttk.Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'))
+        text = Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'), fg='white')
         text.grid(row=0, column=2, columnspan=5, pady=20)
         
         self.input1 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center')
@@ -52,7 +55,7 @@ class Calculator:
         self.exponent = Button(self.frame, text='^', command=lambda: self.button_click_effect(self.exponent, lambda: self.set_operation('^')), width=8, font=('Verdana', 12), padx=10, pady=5)
         self.exponent.grid(row=2, column=6, padx=8, pady=12)
         
-        self.result = ttk.Label(self.frame, text='Result: ', style='Bold.TLabel', font=('Verdana', 14, 'bold'))
+        self.result = Label(self.frame, text='Result: ', font=('Verdana', 14, 'bold'), fg='white')
         self.result.grid(row=3, column=1, columnspan=7, pady=20)
         
         self.calc_button = Button(self.frame, text='Calculate', command=lambda: self.button_click_effect(self.calc_button, self.calculate), width=12, font=('Verdana', 11), padx=15, pady=8)
@@ -69,6 +72,12 @@ class Calculator:
         
         self.bind_keys()
         self.configure_styles()
+        
+    def log_error(self, err_msg):
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open("logs\error_log.txt", "a") as log_file:
+            log_file.write(f"{timestamp} - {err_msg}\n")
+
     
     def set_operation(self, op):
         self.operation = op
@@ -76,25 +85,31 @@ class Calculator:
     def calculate(self):
         try:
             if self.operation not in self.functions:
-                self.result.config(text="Error: No operation selected")
+                self.result.config(text="You have no operation selected. ERR:invopEr", fg='red')
                 return
             first_num = self.input1.get()
             second_num = self.input2.get()
             output = self.functions[self.operation](float(first_num), float(second_num))
-            self.result.config(text='Result: ' + str(output))
+            self.result.config(text='Result: ' + str(output), fg='green')
             self.history.insert(END, f"{first_num} {self.operation} {second_num} = {output}")
         except ZeroDivisionError:
-            self.result.config(text="Division by Zero Error occurred")
+            err_msg = "You cannot divide by zero. ERR:zerodivErr"
+            self.result.config(text=err_msg, fg='red')
+            self.log_error(err_msg)
         except ValueError:
-            self.result.config(text="Value Error occured")
+            err_msg = "Your input(s) is not a valid number. ERR:valErr"
+            self.result.config(text=err_msg, fg='red')
+            self.log_error(err_msg)
         except FloatingPointError:
-            self.result.config(text="Floating Point Error occurred")
+            err_msg = "A floating point error occurred. ERR:floatErr"
+            self.result.config(text=err_msg, fg='red')
+            self.log_error(err_msg)
     
     def clear(self):
         self.operation = ''
         self.input1.delete(0, END)
         self.input2.delete(0, END)
-        self.result.config(text='Result: ')
+        self.result.config(text='Result: ', fg='white')
     
     def button_click_effect(self, btn, callback=None):
         original_bg = btn.cget('bg')
