@@ -15,6 +15,7 @@ class Calculator:
             '/': lambda x, y: x / y,
             '^': lambda x, y: x ** y
         }
+        self.easter_eggs_enabled = True
         
         self.setup_ui()
     
@@ -70,13 +71,37 @@ class Calculator:
         self.history = Listbox(self.frame, height=5, width=50, font=('Verdana', 12))
         self.history.grid(row=5, column=1, columnspan=7, pady=10)
         
+        self.settings_button = Button(self.frame, text='Settings', command=lambda: self.button_click_effect(self.settings_button, self.settings_handler), width=12, font=('Verdana', 11), padx=15, pady=8)
+        self.settings_button.grid(row=4, column=3, columnspan=3, padx=8, pady=12)
+        
         self.bind_keys()
         self.configure_styles()
+        
+    def settings_handler(self):
+        settings_window = Toplevel(self.window)
+        settings_window.title("Settings")
+        
+        eggs_toggled = BooleanVar(value=self.easter_eggs_enabled)
+        
+        def toggle_eggs():
+            self.easter_eggs_enabled = eggs_toggled.get()
+            print(f"Easter Eggs Enabled: {self.easter_eggs_enabled}")
+            
+        eggs_checkbox = Checkbutton(settings_window, text="Enable Easter Eggs", variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12))
+        eggs_checkbox.pack(padx=20, pady=20)
         
     def log_error(self, err_msg):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open("logs\error_log.txt", "a") as log_file:
             log_file.write(f"{timestamp} - {err_msg}\n")
+            
+    def piastri(self):
+        self.piastri_window = Toplevel(self.window)
+        self.piastri_window.title("OSCAR PIASTRIIII")
+        
+        self.piastri_img = PhotoImage(file="piastri.png")
+        img_label = Label(self.piastri_window, image=self.piastri_img)
+        img_label.pack(padx=20, pady=20)
 
     
     def set_operation(self, op):
@@ -92,6 +117,9 @@ class Calculator:
             output = self.functions[self.operation](float(first_num), float(second_num))
             self.result.config(text='Result: ' + str(output), fg='green')
             self.history.insert(END, f"{first_num} {self.operation} {second_num} = {output}")
+            if abs(output - 81) < 1e-9:
+                if self.easter_eggs_enabled:
+                    self.piastri()
         except ZeroDivisionError:
             err_msg = "You cannot divide by zero. ERR:zerodivErr"
             self.result.config(text=err_msg, fg='red')
