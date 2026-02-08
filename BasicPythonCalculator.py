@@ -116,35 +116,41 @@ class Calculator:
         eggs_toggled = BooleanVar(value=self.easter_eggs_enabled)
         dark_toggled = BooleanVar(value=self.dark_theme_enabled)
         
-        def theme_settings():
-            if dark_toggled.get():
-                settings_window.configure(bg='black')
-                for widget in settings_window.winfo_children():
-                    if isinstance(widget, (Label, Button, Checkbutton)):
-                        widget.configure(bg='black', fg='white')
-            else:
-                settings_window.configure(bg='white')
-                for widget in settings_window.winfo_children():
-                    if isinstance(widget, (Label, Button, Checkbutton)):
-                        widget.configure(bg='white', fg='black')
-                        
-        theme_settings()
+        if dark_toggled.get():
+            settings_window.configure(bg='black')
+            bg_color='black'
+            fg_color='white'
+        else:
+            settings_window.configure(bg='white')
+            bg_color='white'
+            fg_color='black'
         
         def toggle_eggs():
             self.easter_eggs_enabled = eggs_toggled.get()
-        def dark_theme():
+                
+        def theme_settings():
             self.dark_theme_enabled = dark_toggled.get()
-            if not dark_toggled.get():
-                self.apply_theme(dark=False)
-                theme_settings()
-            else:
+            if self.dark_theme_enabled:
+                bg_color='black'
+                fg_color='white'
+                settings_window.configure(bg=bg_color)
                 self.apply_theme(dark=True)
-                theme_settings()
+                for widget in settings_window.winfo_children():
+                    if isinstance(widget, (Label, Button, Checkbutton)):
+                        widget.configure(bg=bg_color, fg=fg_color, selectcolor=bg_color)
+            else:
+                bg_color='white'
+                fg_color='black'
+                settings_window.configure(bg=bg_color)
+                self.apply_theme(dark=False)
+                for widget in settings_window.winfo_children():
+                    if isinstance(widget, (Label, Button, Checkbutton)):
+                        widget.configure(bg=bg_color, fg=fg_color, selectcolor=bg_color)
                     
-        dark_toggle = Checkbutton(settings_window, text=("Enable Dark Theme?"), variable=dark_toggled, command=dark_theme, font=('Verdana', 12), fg='white', bg='black', selectcolor='black')
+        dark_toggle = Checkbutton(settings_window, text=("Enable Dark Theme?"), variable=dark_toggled, command=theme_settings, font=('Verdana', 12), fg=fg_color, bg=bg_color, selectcolor=bg_color)
         dark_toggle.pack(padx=20, pady=10)
             
-        eggs_checkbox = Checkbutton(settings_window, text=("Enable Easter Eggs?"), variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12), fg='white', bg='black', selectcolor='black')
+        eggs_checkbox = Checkbutton(settings_window, text=("Enable Easter Eggs?"), variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12), fg=fg_color, bg=bg_color, selectcolor=bg_color)
         eggs_checkbox.pack(padx=20, pady=20)
         
     def log_error(self, err_msg):
