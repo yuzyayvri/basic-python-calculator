@@ -153,6 +153,7 @@ class Calculator:
         self.window.bind('-', lambda _: self.button_click_effect(self.subtraction, lambda: self.set_operation('-')))
         self.window.bind('*', lambda _: self.button_click_effect(self.multiplication, lambda: self.set_operation('*')))
         self.window.bind('/', lambda _: self.button_click_effect(self.division, lambda: self.set_operation('/')))
+        self.window.bind('^', lambda _: self.button_click_effect(self.exponent, lambda: self.set_operation('^')))
     
     def configure_styles(self):
         style = ttk.Style()
