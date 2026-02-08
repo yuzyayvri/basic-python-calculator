@@ -155,8 +155,8 @@ class Calculator:
         
     def log_error(self, err_msg):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with open("logs\error_log.txt", "a") as log_file:
-            log_file.write(f"{timestamp} - {err_msg}\n")
+        with open(os.path.join("logs","error_log.txt"), "a") as log_file:
+            log_file.write(f"[{timestamp}] {err_msg}\n")
             
     def piastri(self):
         self.piastri_window = Toplevel(self.window)
