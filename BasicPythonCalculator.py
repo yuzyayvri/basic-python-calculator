@@ -15,7 +15,8 @@ class Calculator:
             '-': lambda x, y: x - y,
             '*': lambda x, y: x * y,
             '/': lambda x, y: x / y,
-            '^': lambda x, y: x ** y
+            '^': lambda x, y: x ** y,
+            '√': lambda x, y: x ** (1/y)
         }
         self.easter_eggs_enabled = True
         self.dark_theme_enabled = True
@@ -42,7 +43,7 @@ class Calculator:
         style.configure("TEntry", fieldbackground=self.entry_bg, foreground=self.fore)
         
         for widget in self.frame.winfo_children():
-            if isinstance(widget, (Label, Button, Checkbutton)):
+            if isinstance(widget, (Label, Button, Checkbutton, Entry)):
                 widget.configure(bg=self.back, fg=self.fore)
             elif isinstance(widget, Listbox):
                 widget.configure(bg=self.entry_bg, fg=self.fore)
@@ -62,54 +63,56 @@ class Calculator:
         for i in range(6):
             self.frame.grid_rowconfigure(i, weight=1)
         
-        text = Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'), fg='white')
+        text = Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'), fg='white', padx=1, pady=10)
         text.grid(row=0, column=2, columnspan=5, pady=20)
         
-        self.input1 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center', style='TEntry')
-        self.input1.grid(row=1, column=1, columnspan=3, padx=10, pady=15)
+        self.input1 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
+        self.input1.grid(row=1, column=1, columnspan=3, padx=10)
         
-        self.input2 = ttk.Entry(self.frame, width=20, font=('Verdana', 12), justify='center', style='TEntry')
-        self.input2.grid(row=1, column=5, columnspan=3, padx=10, pady=15)
+        self.input2 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
+        self.input2.grid(row=1, column=5, columnspan=3, padx=10)
         
         self.addition = Button(self.frame, text='+', command=lambda: self.button_click_effect(self.addition, lambda: self.set_operation('+')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.addition.grid(row=2, column=2, padx=8, pady=12)
+        self.addition.grid(row=2, column=3, padx=8, pady=8)
         
         self.subtraction = Button(self.frame, text='-', command=lambda: self.button_click_effect(self.subtraction, lambda: self.set_operation('-')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.subtraction.grid(row=2, column=3, padx=8, pady=12)
+        self.subtraction.grid(row=2, column=4, padx=8, pady=8)
         
         self.division = Button(self.frame, text='/', command=lambda: self.button_click_effect(self.division, lambda: self.set_operation('/')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.division.grid(row=2, column=4, padx=8, pady=12)
+        self.division.grid(row=2, column=5, padx=8, pady=8)
         
         self.multiplication = Button(self.frame, text='*', command=lambda: self.button_click_effect(self.multiplication, lambda: self.set_operation('*')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.multiplication.grid(row=2, column=5, padx=8, pady=12)
+        self.multiplication.grid(row=3, column=3, padx=8, pady=8)
         
         self.exponent = Button(self.frame, text='^', command=lambda: self.button_click_effect(self.exponent, lambda: self.set_operation('^')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.exponent.grid(row=2, column=6, padx=8, pady=12)
+        self.exponent.grid(row=3, column=4, padx=8, pady=8)
         
-        self.result = Label(self.frame, text='Result: ', font=('Verdana', 14, 'bold'), fg='white')
-        self.result.grid(row=3, column=1, columnspan=7, pady=20)
+        self.root = Button(self.frame, text='√', command=lambda: self.button_click_effect(self.root, lambda: self.set_operation('√')), width=8, font=('Verdana', 12), padx=10, pady=5)
+        self.root.grid(row=3, column=5, padx=8, pady=8)
+        
+        self.result = Label(self.frame, text='Result: ', font=('Verdana', 14, 'bold'), fg='white', padx=10, pady=10)
+        self.result.grid(row=4, column=1, columnspan=7, pady=20)
         
         self.calc_button = Button(self.frame, text='Calculate', command=lambda: self.button_click_effect(self.calc_button, self.calculate), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.calc_button.grid(row=4, column=1, columnspan=2, padx=8, pady=12)
+        self.calc_button.grid(row=5, column=3, columnspan=3, padx=8, pady=12)
         
         self.clear_button = Button(self.frame, text='Clear', command=lambda: self.button_click_effect(self.clear_button, self.clear), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.clear_button.grid(row=4, column=6, columnspan=2, padx=8, pady=12)
+        self.clear_button.grid(row=5, column=6, columnspan=2, padx=8, pady=12)
         
         self.quit_button = Button(self.frame, text='Quit', command=lambda: self.button_click_effect(self.quit_button, self.window.quit), width=18, font=('Verdana', 11), padx=15, pady=8)
-        self.quit_button.grid(row=6, column=2, columnspan=5, padx=8, pady=12)
+        self.quit_button.grid(row=7, column=2, columnspan=5, padx=8, pady=12)
         
         self.history = Listbox(self.frame, height=5, width=50, font=('Verdana', 12))
-        self.history.grid(row=5, column=1, columnspan=7, pady=10)
+        self.history.grid(row=6, column=1, columnspan=7, pady=10)
         
         self.settings_button = Button(self.frame, text='Settings', command=lambda: self.button_click_effect(self.settings_button, self.settings_handler), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.settings_button.grid(row=4, column=3, columnspan=3, padx=8, pady=12)
+        self.settings_button.grid(row=5, column=1, columnspan=2, padx=8, pady=12)
         
         self.bind_keys()
         self.configure_styles()
 
     def configure_styles(self):
         style = ttk.Style()
-        style.configure('TEntry', font=('Verdana', 10), background = 'black', fieldbackground='white')
         style.configure('TFrame', background = 'black', foreground = 'white')
         style.theme_use('alt')
         
@@ -169,7 +172,7 @@ class Calculator:
             first_num = self.input1.get()
             second_num = self.input2.get()
             output = self.functions[self.operation](float(first_num), float(second_num))
-            self.result.config(text='Result: ' + str(output), fg='green')
+            self.result.config(text='Result: ' + str(output))
             self.history.insert(END, f"{first_num} {self.operation} {second_num} = {output}")
             if abs(output - 81) < 1e-9:
                 if self.easter_eggs_enabled:
@@ -194,7 +197,7 @@ class Calculator:
         self.operation = ''
         self.input1.delete(0, END)
         self.input2.delete(0, END)
-        self.result.config(text='Result: ', fg='white')
+        self.result.config(text='Result: ', fg=self.colors["fg"])
     
     def button_click_effect(self, btn, callback=None):
         original_bg = btn.cget('bg')
