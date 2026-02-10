@@ -63,7 +63,7 @@ class Calculator:
         for i in range(6):
             self.frame.grid_rowconfigure(i, weight=1)
         
-        text = Label(self.frame, text='Basic Python Calculator', font=('Verdana', 18, 'bold'), fg='white', padx=1, pady=10)
+        text = Label(self.frame, text='Basic Python Calculator v0.4.1', font=('Verdana', 18, 'bold'), fg='white', padx=1, pady=10)
         text.grid(row=0, column=2, columnspan=5, pady=20)
         
         self.input1 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
@@ -173,7 +173,14 @@ class Calculator:
             second_num = self.input2.get()
             output = self.functions[self.operation](float(first_num), float(second_num))
             self.result.config(text='Result: ' + str(output))
-            self.history.insert(END, f"{first_num} {self.operation} {second_num} = {output}")
+            num_log = self.history.size()
+            entry = f"{first_num} {self.operation} {second_num} = {output}"
+            if num_log != 0:
+                self.history.insert(0, entry)
+            else:
+                self.history.insert(0, entry)
+            if num_log >= 15:
+                self.history.delete(END)
             if abs(output - 81) < 1e-9:
                 if self.easter_eggs_enabled:
                     self.piastri()
