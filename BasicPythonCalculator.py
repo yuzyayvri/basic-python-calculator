@@ -120,12 +120,6 @@ class Calculator:
         eggs_toggled = BooleanVar(value=self.easter_eggs_enabled)
         dark_toggled = BooleanVar(value=self.dark_theme_enabled)
         
-        def get_theme_colors(dark):
-            if dark:
-                return 'black', 'white'
-            else:
-                return 'white', 'black'
-        
         def toggle_eggs():
             self.easter_eggs_enabled = eggs_toggled.get()
                 
