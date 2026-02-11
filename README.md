@@ -52,3 +52,4 @@ My first project with Python. Originally made sometime in mid-2025 and forgotten
         - Value error. Usually means user inputted a non-number.
     - `ERR:floatErr`
         - Floating point error. Usually means overflow or precision issues occurred. Very rare.
+*Python 3.11.9*
