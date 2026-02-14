@@ -1,11 +1,11 @@
 # Basic-Python-Calculator
 
-## Version 0.4.0
+## Version 0.5.0
 My first project with Python. Originally made sometime in mid-2025 and forgotten about, it was originally a basic 3-line terminal calculator with very limited capability. I picked this project back up in early 2026 because I wanted to continue learning Python.
 
 ## Current features
 - GUI built with tkinter and ttk
-- Basic arithmetic and exponents
+- Basic arithmetic, exponents, and root
 - Keyboard shortcuts:
     - Select operations (`+`, `-`, `*`, `/`, `^`)
     - Calculate (`Enter`)
@@ -18,10 +18,9 @@ My first project with Python. Originally made sometime in mid-2025 and forgotten
 - Secret easter eggs..?? 👀
 - Light and dark theme in the settings menu
 
-## Changelog (v0.4.0)
-- Added root operation (`a` is the base, `b` is the index)
-- Tweaked the button layout
-- Implemented bugfixes
+## Changelog (v0.5.0)
+- Added a cap of 15 entries to the history log to prevent bloating
+- Fixed a bug where error_log.txt would be created in the wrong directory
 
 ## Future plans (so far)
 - Add operations and inputs
