@@ -2,7 +2,9 @@ from tkinter import *
 from tkinter import ttk
 import datetime
 import os
-os.makedirs("logs", exist_ok=True)
+DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_PATH = os.path.join(DIR, "logs")
+os.makedirs(LOG_PATH, exist_ok=True)
 
 class Calculator:
     
@@ -146,7 +148,7 @@ class Calculator:
         
     def log_error(self, err_msg):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with open(os.path.join("logs","error_log.txt"), "a") as log_file:
+        with open(os.path.join(LOG_PATH,"error_log.txt"), "a", encoding="utf-8") as log_file:
             log_file.write(f"[{timestamp}] {err_msg}\n")
             
     def piastri(self):
@@ -186,19 +188,19 @@ class Calculator:
                     self.piastri()
         except ZeroDivisionError:
             err_msg = "You cannot divide by zero. ERR:zerodivErr"
+            self.log_error(err_msg)
             self.result.config(text=err_msg, fg='red')
             self.result.after(5000, lambda: self.clear())
-            self.log_error(err_msg)
         except ValueError:
             err_msg = "Your input(s) is not a valid number. ERR:valErr"
+            self.log_error(err_msg)
             self.result.config(text=err_msg, fg='red')
             self.result.after(5000, lambda: self.clear())
-            self.log_error(err_msg)
         except FloatingPointError:
             err_msg = "A floating point error occurred. ERR:floatErr"
+            self.log_error(err_msg)
             self.result.config(text=err_msg, fg='red')
             self.result.after(5000, lambda: self.clear())
-            self.log_error(err_msg)
     
     def clear(self):
         self.operation = ''
