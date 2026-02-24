@@ -2,232 +2,146 @@ from tkinter import *
 from tkinter import ttk
 import datetime
 import os
+
 DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_PATH = os.path.join(DIR, "logs")
 os.makedirs(LOG_PATH, exist_ok=True)
 
 class Calculator:
-    
     def __init__(self, root):
         self.window = root
-        self.window.configure(bg='black')
         self.operation = None
         self.functions = {
-            '+': lambda x, y: x + y,
-            '-': lambda x, y: x - y,
-            '*': lambda x, y: x * y,
-            '/': lambda x, y: x / y,
-            '^': lambda x, y: x ** y,
-            '√': lambda x, y: x ** (1/y)
+            '+': lambda x, y: x + y, '-': lambda x, y: x - y,
+            '*': lambda x, y: x * y, '/': lambda x, y: x / y,
+            '^': lambda x, y: x ** y, '√': lambda x, y: x ** (1/y)
         }
         self.easter_eggs_enabled = True
         self.dark_theme_enabled = True
+        self.theme_registry = []
         
         self.setup_ui()
         self.apply_theme(dark=True)
-        
+
     def apply_theme(self, dark=True):
-        theme = {
-        "dark": {"bg": "black", "fg": "white", "entry_bg": "black"},
-        "light": {"bg": "white", "fg": "black", "entry_bg": "white"}
-        }
-    
-        self.colors = theme["dark"] if dark else theme["light"]
-        self.back = self.colors["bg"]
-        self.fore = self.colors["fg"]
-        self.entry_bg = self.colors["entry_bg"]
+        self.dark_theme_enabled = dark
+        colors = {"bg": "black" if dark else "white", "fg": "white" if dark else "black"}
+        self.current_theme = colors
+        self.window.configure(bg=colors["bg"])
+        ttk.Style().configure("TFrame", background=colors["bg"])
         
-        self.window.configure(bg=self.back)
-        
-        style = ttk.Style()
-        style.configure("TFrame", background=self.back)
-        self.frame.configure(style="TFrame")
-        style.configure("TEntry", fieldbackground=self.entry_bg, foreground=self.fore)
-        
-        for widget in self.frame.winfo_children():
-            if isinstance(widget, (Label, Button, Checkbutton, Entry)):
-                widget.configure(bg=self.back, fg=self.fore)
-            elif isinstance(widget, Listbox):
-                widget.configure(bg=self.entry_bg, fg=self.fore)
+        for w in self.theme_registry:
+            w.configure(bg=colors["bg"], fg=colors["fg"])
+            
+            if isinstance(w, (Button, Checkbutton)):
+                w.configure(activebackground="lightgray", activeforeground=colors["fg"])
+                if isinstance(w, Checkbutton):
+                    w.configure(selectcolor=colors["bg"])
+            
+            elif isinstance(w, Entry):
+                w.configure(insertbackground=colors["fg"], highlightbackground=colors["bg"])
                 
-        self.current_theme = self.colors
-    
+            elif isinstance(w, Listbox):
+                w.configure(highlightbackground=colors["bg"])
+
+    def create_btn(self, text, row, col, cmd, colspan=1, width=8):
+        btn = Button(self.frame, text=text, width=width, font=('Verdana', 11), padx=10, pady=5,
+                     command=lambda: self.button_click_effect(btn, cmd))
+        btn.grid(row=row, column=col, columnspan=colspan, padx=8, pady=8)
+        self.theme_registry.append(btn)
+        return btn
+
     def setup_ui(self):
-        self.frame = ttk.Frame(self.window, padding=30, width=700, height=550, style='TFrame')
+        self.frame = ttk.Frame(self.window, padding=30, width=700, height=550)
         self.frame.grid(row=0, column=0, sticky="nsew")
         self.frame.grid_propagate(False)
         self.window.title('Basic Python Calculator')
-        self.window.grid_rowconfigure(0, weight=1)
-        self.window.grid_columnconfigure(0, weight=1)
         
-        for i in range(11):
-            self.frame.grid_columnconfigure(i, weight=1)
-        for i in range(6):
-            self.frame.grid_rowconfigure(i, weight=1)
-        
-        text = Label(self.frame, text='Basic Python Calculator v0.4.1', font=('Verdana', 18, 'bold'), fg='white', padx=1, pady=10)
-        text.grid(row=0, column=2, columnspan=5, pady=20)
+        for i in range(11): self.frame.grid_columnconfigure(i, weight=1)
+        for i in range(8): self.frame.grid_rowconfigure(i, weight=1)
+
+        hdr = Label(self.frame, text='Basic Python Calculator v0.5.0', font=('Verdana', 18, 'bold'))
+        hdr.grid(row=0, column=2, columnspan=5, pady=20)
         
         self.input1 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
         self.input1.grid(row=1, column=1, columnspan=3, padx=10)
-        
         self.input2 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
         self.input2.grid(row=1, column=5, columnspan=3, padx=10)
         
-        self.addition = Button(self.frame, text='+', command=lambda: self.button_click_effect(self.addition, lambda: self.set_operation('+')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.addition.grid(row=2, column=3, padx=8, pady=8)
-        
-        self.subtraction = Button(self.frame, text='-', command=lambda: self.button_click_effect(self.subtraction, lambda: self.set_operation('-')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.subtraction.grid(row=2, column=4, padx=8, pady=8)
-        
-        self.division = Button(self.frame, text='/', command=lambda: self.button_click_effect(self.division, lambda: self.set_operation('/')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.division.grid(row=2, column=5, padx=8, pady=8)
-        
-        self.multiplication = Button(self.frame, text='*', command=lambda: self.button_click_effect(self.multiplication, lambda: self.set_operation('*')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.multiplication.grid(row=3, column=3, padx=8, pady=8)
-        
-        self.exponent = Button(self.frame, text='^', command=lambda: self.button_click_effect(self.exponent, lambda: self.set_operation('^')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.exponent.grid(row=3, column=4, padx=8, pady=8)
-        
-        self.root = Button(self.frame, text='√', command=lambda: self.button_click_effect(self.root, lambda: self.set_operation('√')), width=8, font=('Verdana', 12), padx=10, pady=5)
-        self.root.grid(row=3, column=5, padx=8, pady=8)
-        
-        self.result = Label(self.frame, text='Result: ', font=('Verdana', 14, 'bold'), fg='white', padx=10, pady=10)
+        self.result = Label(self.frame, text='Result: ', font=('Verdana', 14, 'bold'))
         self.result.grid(row=4, column=1, columnspan=7, pady=20)
-        
-        self.calc_button = Button(self.frame, text='Calculate', command=lambda: self.button_click_effect(self.calc_button, self.calculate), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.calc_button.grid(row=5, column=3, columnspan=3, padx=8, pady=12)
-        
-        self.clear_button = Button(self.frame, text='Clear', command=lambda: self.button_click_effect(self.clear_button, self.clear), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.clear_button.grid(row=5, column=6, columnspan=2, padx=8, pady=12)
-        
-        self.quit_button = Button(self.frame, text='Quit', command=lambda: self.button_click_effect(self.quit_button, self.window.quit), width=18, font=('Verdana', 11), padx=15, pady=8)
-        self.quit_button.grid(row=7, column=2, columnspan=5, padx=8, pady=12)
-        
+
+        self.theme_registry.extend([hdr, self.input1, self.input2, self.result])
+
+        ops = [('+', 2, 3), ('-', 2, 4), ('/', 2, 5), ('*', 3, 3), ('^', 3, 4), ('√', 3, 5)]
+        for txt, r, c in ops:
+            self.create_btn(txt, r, c, lambda t=txt: self.set_operation(t))
+
+        self.create_btn('Settings', 5, 1, self.settings_handler, colspan=2, width=12)
+        self.calc_btn = self.create_btn('Calculate', 5, 3, self.calculate, colspan=3, width=12)
+        self.create_btn('Clear', 5, 6, self.clear, colspan=2, width=12)
+        self.create_btn('Quit', 7, 2, self.window.quit, colspan=5, width=18)
+
         self.history = Listbox(self.frame, height=5, width=50, font=('Verdana', 12))
         self.history.grid(row=6, column=1, columnspan=7, pady=10)
-        
-        self.settings_button = Button(self.frame, text='Settings', command=lambda: self.button_click_effect(self.settings_button, self.settings_handler), width=12, font=('Verdana', 11), padx=15, pady=8)
-        self.settings_button.grid(row=5, column=1, columnspan=2, padx=8, pady=12)
-        
+        self.theme_registry.append(self.history)
         self.bind_keys()
-        self.configure_styles()
 
-    def configure_styles(self):
-        style = ttk.Style()
-        style.configure('TFrame', background = 'black', foreground = 'white')
-        style.theme_use('alt')
-        
     def settings_handler(self):
-        settings_window = Toplevel(self.window)
-        settings_window.title("Settings")
-        
-        eggs_toggled = BooleanVar(value=self.easter_eggs_enabled)
-        dark_toggled = BooleanVar(value=self.dark_theme_enabled)
-        
-        def toggle_eggs():
-            self.easter_eggs_enabled = eggs_toggled.get()
-                
-        def theme_settings():
-            self.dark_theme_enabled = dark_toggled.get()
-            
-            self.colors = self.current_theme
-            self.apply_theme(self.dark_theme_enabled)
-            settings_window.configure(bg=self.colors["bg"])
-            for widget in settings_window.winfo_children():
-                    if isinstance(widget, (Label, Button, Checkbutton)):
-                        widget.configure(bg=self.colors["bg"], fg=self.colors["fg"], selectcolor=self.colors["bg"])
-                    
-        dark_toggle = Checkbutton(settings_window, text=("Enable Dark Theme?"), variable=dark_toggled, command=theme_settings, font=('Verdana', 12), fg=self.colors["fg"], bg=self.colors["bg"], selectcolor=self.colors["bg"])
-        dark_toggle.pack(padx=20, pady=10)
-            
-        eggs_checkbox = Checkbutton(settings_window, text=("Enable Easter Eggs?"), variable=eggs_toggled, command=toggle_eggs, font=('Verdana', 12), fg=self.colors["fg"], bg=self.colors["bg"], selectcolor=self.colors["bg"])
-        eggs_checkbox.pack(padx=20, pady=20)
-        
-        theme_settings()
-        
-    def log_error(self, err_msg):
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with open(os.path.join(LOG_PATH,"error_log.txt"), "a", encoding="utf-8") as log_file:
-            log_file.write(f"[{timestamp}] {err_msg}\n")
-            
-    def piastri(self):
-        self.piastri_window = Toplevel(self.window)
-        self.piastri_window.title("OSCAR PIASTRIIII")
-        
-        self.piastri_img = PhotoImage(file="piastri.png")
-        img_label = Label(self.piastri_window, image=self.piastri_img)
-        img_label.pack(padx=20, pady=20)
+        sw = Toplevel(self.window)
+        sw.title("Settings")
+        d_var, e_var = BooleanVar(value=self.dark_theme_enabled), BooleanVar(value=self.easter_eggs_enabled)
 
-    
-    def set_operation(self, op):
-        self.operation = op
-    
+        def sync():
+            self.apply_theme(d_var.get())
+            bg, fg = self.current_theme["bg"], self.current_theme["fg"]
+            sw.configure(bg=bg)
+            for w in sw.winfo_children():
+                if isinstance(w, Checkbutton):
+                    w.configure(bg=bg, fg=fg, selectcolor=bg, activebackground=bg)
+
+        Checkbutton(sw, text="Dark Theme", variable=d_var, command=sync, font=('Verdana', 12)).pack(padx=20, pady=10)
+        Checkbutton(sw, text="Easter Eggs", variable=e_var, command=lambda: setattr(self, 'easter_eggs_enabled', e_var.get()), font=('Verdana', 12)).pack(padx=20, pady=20)
+        sync()
+
+    def _display_error(self, msg):
+        self.result.config(text=msg, fg='red')
+        with open(os.path.join(LOG_PATH, "error_log.txt"), "a") as f:
+            f.write(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] {msg}\n")
+        self.window.after(3000, self.clear)
+
+    def set_operation(self, op): self.operation = op
+
     def calculate(self):
         try:
-            if self.operation not in self.functions:
-                err_msg = "You have no operation selected. ERR:invopErr"
-                self.result.config(text=err_msg, fg='red')
-                self.log_error(err_msg)
-                self.result.after(5000, lambda: self.clear())
-                return  
-            first_num = self.input1.get()
-            second_num = self.input2.get()
-            output = self.functions[self.operation](float(first_num), float(second_num))
-            self.result.config(text='Result: ' + str(output))
-            num_log = self.history.size()
-            entry = f"{first_num} {self.operation} {second_num} = {output}"
-            if num_log != 0:
-                self.history.insert(0, entry)
-            else:
-                self.history.insert(0, entry)
-            if num_log >= 15:
-                self.history.delete(END)
-            if abs(output - 81) < 1e-9:
-                if self.easter_eggs_enabled:
-                    self.piastri()
-        except ZeroDivisionError:
-            err_msg = "You cannot divide by zero. ERR:zerodivErr"
-            self.log_error(err_msg)
-            self.result.config(text=err_msg, fg='red')
-            self.result.after(5000, lambda: self.clear())
-        except ValueError:
-            err_msg = "Your input(s) is not a valid number. ERR:valErr"
-            self.log_error(err_msg)
-            self.result.config(text=err_msg, fg='red')
-            self.result.after(5000, lambda: self.clear())
-        except FloatingPointError:
-            err_msg = "A floating point error occurred. ERR:floatErr"
-            self.log_error(err_msg)
-            self.result.config(text=err_msg, fg='red')
-            self.result.after(5000, lambda: self.clear())
-    
+            if not self.operation: raise ValueError("No operation selected")
+            v1, v2 = float(self.input1.get()), float(self.input2.get())
+            res = self.functions[self.operation](v1, v2)
+            self.result.config(text=f'Result: {res}', fg=self.current_theme["fg"])
+            self.history.insert(0, f"{v1} {self.operation} {v2} = {res}")
+            if self.history.size() > 15: self.history.delete(END)
+            if abs(res - 81) < 1e-9 and self.easter_eggs_enabled: print("Oscar Piastri!") 
+        except Exception as e:
+            self._display_error(str(e))
+
     def clear(self):
-        self.operation = ''
-        self.input1.delete(0, END)
-        self.input2.delete(0, END)
-        self.result.config(text='Result: ', fg=self.colors["fg"])
-    
+        self.operation = None
+        for i in (self.input1, self.input2): i.delete(0, END)
+        self.result.config(text='Result: ', fg=self.current_theme["fg"])
+
     def button_click_effect(self, btn, callback=None):
-        original_bg = btn.cget('bg')
+        orig = btn.cget('bg')
         btn.config(bg='lightgray')
-        self.window.after(100, lambda: btn.config(bg=original_bg))
-        if callback:
-            callback()
-    
+        self.window.after(100, lambda: btn.config(bg=orig))
+        if callback: callback()
+
     def bind_keys(self):
-        self.window.bind('<Return>', lambda _: self.button_click_effect(self.calc_button, self.calculate))
-        self.window.bind('<Control-q>', lambda _: self.button_click_effect(self.quit_button, self.window.quit))
-        self.window.bind('+', lambda _: self.button_click_effect(self.addition, lambda: self.set_operation('+')))
-        self.window.bind('-', lambda _: self.button_click_effect(self.subtraction, lambda: self.set_operation('-')))
-        self.window.bind('*', lambda _: self.button_click_effect(self.multiplication, lambda: self.set_operation('*')))
-        self.window.bind('/', lambda _: self.button_click_effect(self.division, lambda: self.set_operation('/')))
-        self.window.bind('^', lambda _: self.button_click_effect(self.exponent, lambda: self.set_operation('^')))
-        
+        self.window.bind('<Return>', lambda _: self.button_click_effect(self.calc_btn, self.calculate))
+        for k in ['+', '-', '*', '/', '^']:
+            self.window.bind(k, lambda e, op=k: self.set_operation(op))
 
 if __name__ == '__main__':
     root = Tk()
     root.resizable(False, False)
-    root.configure(bg='black')
-    app = Calculator(root)
+    Calculator(root)
     root.mainloop()
