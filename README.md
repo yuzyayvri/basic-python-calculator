@@ -1,6 +1,6 @@
 # Basic-Python-Calculator
 
-## Version 0.5.0
+## Version 0.6.0
 My first project with Python. Originally made sometime in mid-2025 and forgotten about, it was originally a basic 3-line terminal calculator with very limited capability. I picked this project back up in early 2026 because I wanted to continue learning Python.
 
 ## Current features
@@ -13,14 +13,17 @@ My first project with Python. Originally made sometime in mid-2025 and forgotten
 - Error handling with logging
 - Floating point support
 - Clear function to reset all inputs and selected operation
-- History log for previous calculations
+- History log of 15 entries for previous calculations
 - Basic settings menu
 - Secret easter eggs..?? 👀
 - Light and dark theme in the settings menu
 
-## Changelog (v0.5.0)
-- Added a cap of 15 entries to the history log to prevent bloating
-- Fixed a bug where error_log.txt would be created in the wrong directory
+## Changelog (v0.6.0)
+- Significant overhaul to the architecture
+- Theme registry implementation for themes
+- Centralized error handling
+- Lambda binds bugfix
+- Button creation helper
 
 ## Future plans (so far)
 - Add operations and inputs
