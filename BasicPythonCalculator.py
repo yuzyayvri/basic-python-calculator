@@ -60,7 +60,7 @@ class Calculator:
         for i in range(11): self.frame.grid_columnconfigure(i, weight=1)
         for i in range(8): self.frame.grid_rowconfigure(i, weight=1)
 
-        hdr = Label(self.frame, text='Basic Python Calculator v0.5.0', font=('Verdana', 18, 'bold'))
+        hdr = Label(self.frame, text='Basic Python Calculator v0.6.0', font=('Verdana', 18, 'bold'))
         hdr.grid(row=0, column=2, columnspan=5, pady=20)
         
         self.input1 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
