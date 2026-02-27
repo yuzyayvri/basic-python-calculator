@@ -60,7 +60,7 @@ class Calculator:
         for i in range(11): self.frame.grid_columnconfigure(i, weight=1)
         for i in range(8): self.frame.grid_rowconfigure(i, weight=1)
 
-        hdr = Label(self.frame, text='Basic Python Calculator v0.6.0', font=('Verdana', 18, 'bold'))
+        hdr = Label(self.frame, text='Basic Python Calculator v0.6.1', font=('Verdana', 18, 'bold'))
         hdr.grid(row=0, column=2, columnspan=5, pady=20)
         
         self.input1 = Entry(self.frame, width=20, font=('Verdana', 24), justify='center')
@@ -111,6 +111,14 @@ class Calculator:
         self.window.after(3000, self.clear)
 
     def set_operation(self, op): self.operation = op
+    
+    def piastri(self):
+        print('Oscar Piastri!')
+        self.piastri_window = Toplevel(self.window)
+        self.piastri_window.title = "OSCAHHH PIASTRIII"
+        self.piastri_img = PhotoImage(file='piastri.png')
+        img_label = Label(self.piastri_window, image=self.piastri_img)
+        img_label.pack(padx=20,pady=20)
 
     def calculate(self):
         try:
@@ -120,7 +128,8 @@ class Calculator:
             self.result.config(text=f'Result: {res}', fg=self.current_theme["fg"])
             self.history.insert(0, f"{v1} {self.operation} {v2} = {res}")
             if self.history.size() > 15: self.history.delete(END)
-            if abs(res - 81) < 1e-9 and self.easter_eggs_enabled: print("Oscar Piastri!") 
+            if abs(res - 81) < 1e-9 and self.easter_eggs_enabled:
+                self.piastri()
         except Exception as e:
             self._display_error(str(e))
 
